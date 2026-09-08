@@ -23,3 +23,5 @@ Aplikasi latihan untuk tugas pertemuan 1
 bagusbrihaspati
 ## Status
 Proyek awal perkuliahan.
+
+tujuan: bebas aja 
