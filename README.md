@@ -24,4 +24,9 @@ bagusbrihaspati
 ## Status
 Proyek awal perkuliahan.
 
-tujuan: bebas aja 
+tujuan: membuat tugas dengan baik menggunakn git dan github
+
+fitur:
+1. vscode
+2. google
+3. gemini
