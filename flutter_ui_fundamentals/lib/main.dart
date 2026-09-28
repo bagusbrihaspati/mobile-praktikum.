@@ -10,72 +10,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tahap 5 - Stateless vs Stateful',
+      title: 'Tahap 6 - Complex Layouting',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         useMaterial3: true,
       ),
-      home: const CounterPage(),
+      home: const ProfileLayoutPage(),
     );
   }
 }
 
-// 1. STATELESS WIDGET (Tampilan Statis Header Identitas)
-class IdentityHeader extends StatelessWidget {
-  final String name;
-  final String nim;
-
-  const IdentityHeader({
-    super.key,
-    required this.name,
-    required this.nim,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      color: Colors.deepOrange.shade50,
-      child: Column(
-        children: [
-          const Text(
-            'StatelessWidget (Identitas Tetap)',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            '$nim - $name',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepOrange),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// 2. STATEFUL WIDGET (Tampilan Dinamis Counter)
-class CounterPage extends StatefulWidget {
-  const CounterPage({super.key});
-
-  @override
-  State<CounterPage> createState() => _CounterPageState();
-}
-
-class _CounterPageState extends State<CounterPage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  void _resetCounter() {
-    setState(() {
-      _counter = 0;
-    });
-  }
+class ProfileLayoutPage extends StatelessWidget {
+  const ProfileLayoutPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -84,52 +31,147 @@ class _CounterPageState extends State<CounterPage> {
         title: const Text('2415051090 - I Ketut Bagus Brihaspati'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: Column(
-        children: [
-          // Panggil Stateless Widget
-          const IdentityHeader(
-            name: 'I Ketut Bagus Brihaspati',
-            nim: '2415051090',
-          ),
-          const Divider(height: 1),
-          
-          // Bagian Stateful (Dinamis)
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // 1. STACK: Sampul Header & Foto Profil Melayang
+            Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.bottomCenter,
+              children: [
+                // Banner Background
+                Container(
+                  height: 160,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.indigo, Colors.deepPurple],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
+                // Avatar Profil Melayang
+                Positioned(
+                  top: 100,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.indigoAccent,
+                      child: Icon(Icons.person, size: 60, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 60),
+
+            // 2. COLUMN & TEXT: Nama & NIM
+            const Text(
+              'I Ketut Bagus Brihaspati',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'NIM: 2415051090 | PTI FTK Undiksha',
+              style: TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+            const SizedBox(height: 20),
+
+            // 3. ROW, EXPANDED, & FLEXIBLE: Statistik Profil
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
                 children: [
-                  const Text(
-                    'StatefulWidget (Penghitung Angka):',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    '$_counter',
-                    style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.deepOrange),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: _incrementCounter,
-                        icon: const Icon(Icons.add),
-                        label: const Text('Tambah'),
+                  // Expanded Card
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.indigo.shade50,
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      const SizedBox(width: 12),
-                      OutlinedButton.icon(
-                        onPressed: _resetCounter,
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Reset'),
+                      child: Column(
+                        children: const [
+                          Text('Semester', style: TextStyle(color: Colors.grey)),
+                          SizedBox(height: 4),
+                          Text('5', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        ],
                       ),
-                    ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  
+                  // Flexible Card (Mengikuti Konten)
+                  Flexible(
+                    flex: 1,
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.teal.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        children: const [
+                          Text('Prodi', style: TextStyle(color: Colors.grey)),
+                          SizedBox(height: 4),
+                          Text('PTI', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+
+                  // Expanded Card
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.amber.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        children: const [
+                          Text('Status', style: TextStyle(color: Colors.grey)),
+                          SizedBox(height: 4),
+                          Text('Aktif', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+
+            // 4. CONTAINER: Kartu Info Detail
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text('Tentang Layout:', style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(height: 6),
+                  Text('• Stack digunakan untuk menumpuk foto di atas banner.'),
+                  Text('• Expanded membagi ruang secara proporsional.'),
+                  Text('• Flexible memungkinkan elemen menyesuaikan ukuran isi.'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
