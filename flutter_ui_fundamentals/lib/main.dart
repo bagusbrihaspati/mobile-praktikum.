@@ -10,19 +10,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tahap 6 - Complex Layouting',
+      title: 'Tahap 7 - Widget UI Dasar',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const ProfileLayoutPage(),
+      home: const BasicWidgetsPage(),
     );
   }
 }
 
-class ProfileLayoutPage extends StatelessWidget {
-  const ProfileLayoutPage({super.key});
+class BasicWidgetsPage extends StatelessWidget {
+  const BasicWidgetsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,144 +32,97 @@ class ProfileLayoutPage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // 1. STACK: Sampul Header & Foto Profil Melayang
-            Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.bottomCenter,
-              children: [
-                // Banner Background
-                Container(
-                  height: 160,
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.indigo, Colors.deepPurple],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
+            // 1. CircleAvatar dengan Image Asset (profile.jpg)
+            Center(
+              child: CircleAvatar(
+                radius: 55,
+                backgroundColor: Colors.blue.shade100,
+                child: const CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage('assets/images/profile.jpg'),
                 ),
-                // Avatar Profil Melayang
-                Positioned(
-                  top: 100,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Colors.indigoAccent,
-                      child: Icon(Icons.person, size: 60, color: Colors.white),
-                    ),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // 2. Text Widget
+            const Text(
+              'I Ketut Bagus Brihaspati',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
+            ),
+            const Text(
+              'NIM: 2415051090',
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+            const SizedBox(height: 16),
+
+            // 3. Card & ListTile Widget
+            Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: const [
+                  ListTile(
+                    leading: Icon(Icons.school, color: Colors.blue),
+                    title: Text('Program Studi'),
+                    subtitle: Text('Pendidikan Teknik Informatika (PTI)'),
                   ),
+                  Divider(height: 1),
+                  ListTile(
+                    leading: Icon(Icons.location_city, color: Colors.blue),
+                    title: Text('Fakultas'),
+                    subtitle: Text('Teknik dan Kejuruan (FTK)'),
+                  ),
+                  Divider(height: 1),
+                  ListTile(
+                    leading: Icon(Icons.account_balance, color: Colors.blue),
+                    title: Text('Universitas'),
+                    subtitle: Text('Universitas Pendidikan Ganesha'),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // 4. Button Widgets (ElevatedButton & OutlinedButton)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Tombol Simpan Profil Diklik!'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.save),
+                  label: const Text('Simpan Profil'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Tombol Bagikan Profil Diklik!'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.share),
+                  label: const Text('Bagikan'),
                 ),
               ],
             ),
-            const SizedBox(height: 60),
-
-            // 2. COLUMN & TEXT: Nama & NIM
-            const Text(
-              'I Ketut Bagus Brihaspati',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'NIM: 2415051090 | PTI FTK Undiksha',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-            ),
-            const SizedBox(height: 20),
-
-            // 3. ROW, EXPANDED, & FLEXIBLE: Statistik Profil
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: [
-                  // Expanded Card
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.indigo.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        children: const [
-                          Text('Semester', style: TextStyle(color: Colors.grey)),
-                          SizedBox(height: 4),
-                          Text('5', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  
-                  // Flexible Card (Mengikuti Konten)
-                  Flexible(
-                    flex: 1,
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.teal.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        children: const [
-                          Text('Prodi', style: TextStyle(color: Colors.grey)),
-                          SizedBox(height: 4),
-                          Text('PTI', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-
-                  // Expanded Card
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.amber.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        children: const [
-                          Text('Status', style: TextStyle(color: Colors.grey)),
-                          SizedBox(height: 4),
-                          Text('Aktif', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // 4. CONTAINER: Kartu Info Detail
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16.0),
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text('Tentang Layout:', style: TextStyle(fontWeight: FontWeight.bold)),
-                  SizedBox(height: 6),
-                  Text('• Stack digunakan untuk menumpuk foto di atas banner.'),
-                  Text('• Expanded membagi ruang secara proporsional.'),
-                  Text('• Flexible memungkinkan elemen menyesuaikan ukuran isi.'),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
           ],
         ),
       ),
