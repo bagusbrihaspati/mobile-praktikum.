@@ -13,26 +13,31 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tahap 10 - Navigasi',
+      title: 'Tahap 11 - Named Routes',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const FirstScreen(),
+      // Pendaftaran Rute Terpusat (Named Routes)
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const HomeScreen(),
+        '/detail': (context) => const DetailScreen(),
+      },
     );
   }
 }
 
-// ==================== HALAMAN 1 ====================
-class FirstScreen extends StatefulWidget {
-  const FirstScreen({super.key});
+// ==================== HALAMAN UTAMA (ROUTE: '/') ====================
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<FirstScreen> createState() => _FirstScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _FirstScreenState extends State<FirstScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _controller = TextEditingController();
   String _feedbackData = 'Belum ada data balasan';
 
@@ -42,20 +47,16 @@ class _FirstScreenState extends State<FirstScreen> {
     super.dispose();
   }
 
-  // Fungsi untuk push & menunggu balasan (Get Data)
-  Future<void> _navigateToSecondScreen() async {
-    final result = await Navigator.push(
+  // Pindah ke rute '/detail' menggunakan Named Route
+  Future<void> _navigateToDetail() async {
+    final result = await Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (context) => SecondScreen(
-          dataKirim: _controller.text.isEmpty
-              ? 'Pesan Default dari Halaman 1'
-              : _controller.text,
-        ),
-      ),
+      '/detail',
+      arguments: _controller.text.isEmpty
+          ? 'Pesan Default dari Named Route'
+          : _controller.text,
     );
 
-    // Menerima data kembalian dari Halaman 2
     if (result != null && mounted) {
       setState(() {
         _feedbackData = result.toString();
@@ -67,7 +68,7 @@ class _FirstScreenState extends State<FirstScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('$studentId - Halaman Utama'),
+        title: const Text('$studentId - Named Routes'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Padding(
@@ -78,15 +79,16 @@ class _FirstScreenState extends State<FirstScreen> {
             TextField(
               controller: _controller,
               decoration: const InputDecoration(
-                labelText: 'Masukkan pesan yang ingin dikirim',
+                labelText: 'Masukkan pesan via Named Route',
                 border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.alt_route),
               ),
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-              onPressed: _navigateToSecondScreen,
+              onPressed: _navigateToDetail,
               icon: const Icon(Icons.arrow_forward),
-              label: const Text('Kirim & Pindah Halaman'),
+              label: const Text('Buka Halaman Detail (/detail)'),
             ),
             const SizedBox(height: 32),
             Card(
@@ -95,7 +97,7 @@ class _FirstScreenState extends State<FirstScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    const Text('Data Balasan dari Halaman 2:'),
+                    const Text('Data Kembalian dari Detail Screen:'),
                     const SizedBox(height: 8),
                     Text(
                       _feedbackData,
@@ -115,17 +117,19 @@ class _FirstScreenState extends State<FirstScreen> {
   }
 }
 
-// ==================== HALAMAN 2 ====================
-class SecondScreen extends StatelessWidget {
-  final String dataKirim;
-
-  const SecondScreen({super.key, required this.dataKirim});
+// ==================== HALAMAN DETAIL (ROUTE: '/detail') ====================
+class DetailScreen extends StatelessWidget {
+  const DetailScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Menangkap argumen yang dikirim melalui pushNamed
+    final String dataReceived =
+        ModalRoute.of(context)?.settings.arguments as String? ?? 'Tidak Ada Data';
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('$studentName - Detail'),
+        title: const Text('$studentName - Detail Route'),
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       ),
       body: Center(
@@ -134,12 +138,12 @@ class SecondScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Data yang Diterima:'),
+              const Text('Argumen yang Diterima via ModalRoute:'),
               const SizedBox(height: 8),
               Text(
-                dataKirim,
+                dataReceived,
                 style: const TextStyle(
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
@@ -147,11 +151,10 @@ class SecondScreen extends StatelessWidget {
               const SizedBox(height: 32),
               ElevatedButton.icon(
                 onPressed: () {
-                  // Kembali sambil mengirim data balik (Pop Data)
-                  Navigator.pop(context, 'Data berhasil diproses oleh $studentName!');
+                  Navigator.pop(context, 'Sukses diproses oleh $studentName!');
                 },
                 icon: const Icon(Icons.arrow_back),
-                label: const Text('Kembali & Kirim Status'),
+                label: const Text('Kembali (Pop Route)'),
               ),
             ],
           ),
