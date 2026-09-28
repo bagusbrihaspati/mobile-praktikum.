@@ -10,19 +10,72 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tahap 4 - Widget Tree',
+      title: 'Tahap 5 - Stateless vs Stateful',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         useMaterial3: true,
       ),
-      home: const WidgetTreeDemo(),
+      home: const CounterPage(),
     );
   }
 }
 
-class WidgetTreeDemo extends StatelessWidget {
-  const WidgetTreeDemo({super.key});
+// 1. STATELESS WIDGET (Tampilan Statis Header Identitas)
+class IdentityHeader extends StatelessWidget {
+  final String name;
+  final String nim;
+
+  const IdentityHeader({
+    super.key,
+    required this.name,
+    required this.nim,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      color: Colors.deepOrange.shade50,
+      child: Column(
+        children: [
+          const Text(
+            'StatelessWidget (Identitas Tetap)',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '$nim - $name',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepOrange),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// 2. STATEFUL WIDGET (Tampilan Dinamis Counter)
+class CounterPage extends StatefulWidget {
+  const CounterPage({super.key});
+
+  @override
+  State<CounterPage> createState() => _CounterPageState();
+}
+
+class _CounterPageState extends State<CounterPage> {
+  int _counter = 0;
+
+  void _incrementCounter() {
+    setState(() {
+      _counter++;
+    });
+  }
+
+  void _resetCounter() {
+    setState(() {
+      _counter = 0;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,89 +84,52 @@ class WidgetTreeDemo extends StatelessWidget {
         title: const Text('2415051090 - I Ketut Bagus Brihaspati'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Header / Parent Container 1
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: Colors.indigo.shade50,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.indigo.shade200),
-              ),
+      body: Column(
+        children: [
+          // Panggil Stateless Widget
+          const IdentityHeader(
+            name: 'I Ketut Bagus Brihaspati',
+            nim: '2415051090',
+          ),
+          const Divider(height: 1),
+          
+          // Bagian Stateful (Dinamis)
+          Expanded(
+            child: Center(
               child: Column(
-                children: const [
-                  Text(
-                    'Visualisasi Widget Tree',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'StatefulWidget (Penghitung Angka):',
+                    style: TextStyle(fontSize: 16),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 12),
                   Text(
-                    'Praktikum Pemrograman Mobile',
-                    style: TextStyle(color: Colors.grey),
+                    '$_counter',
+                    style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.deepOrange),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: _incrementCounter,
+                        icon: const Icon(Icons.add),
+                        label: const Text('Tambah'),
+                      ),
+                      const SizedBox(width: 12),
+                      OutlinedButton.icon(
+                        onPressed: _resetCounter,
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Reset'),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
-
-            // Child Level 2 (Row dengan 2 Sub-Widget)
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade100,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text('NIM', style: TextStyle(fontWeight: FontWeight.bold)),
-                        SizedBox(height: 4),
-                        Text('2415051090'),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: Colors.teal.shade100,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text('Nama', style: TextStyle(fontWeight: FontWeight.bold)),
-                        SizedBox(height: 4),
-                        Text('I Ketut Bagus Brihaspati', overflow: TextOverflow.ellipsis),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // Footer / Parent Container 2
-            Container(
-              padding: const EdgeInsets.all(12.0),
-              color: Colors.amber.shade100,
-              child: const Text(
-                'Struktur: MaterialApp -> Scaffold -> Column -> [Container, Row, Container]',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
