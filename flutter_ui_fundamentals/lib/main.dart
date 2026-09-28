@@ -10,19 +10,54 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tahap 7 - Widget UI Dasar',
+      title: 'Tahap 8 - Form & Validasi',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
-      home: const BasicWidgetsPage(),
+      home: const FormValidationPage(),
     );
   }
 }
 
-class BasicWidgetsPage extends StatelessWidget {
-  const BasicWidgetsPage({super.key});
+class FormValidationPage extends StatefulWidget {
+  const FormValidationPage({super.key});
+
+  @override
+  State<FormValidationPage> createState() => _FormValidationPageState();
+}
+
+class _FormValidationPageState extends State<FormValidationPage> {
+  // GlobalKey untuk mengidentifikasi dan memvalidasi Form
+  final _formKey = GlobalKey<FormState>();
+
+  // Controller untuk mengambil data dari TextField
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _nimController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _nimController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  void _submitForm() {
+    // Menjalankan validasi seluruh TextFormField di dalam Form
+    if (_formKey.currentState!.validate()) {
+      // Jika semua input valid
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Form Berhasil Dikirim!\nNama: ${_nameController.text} | NIM: ${_nimController.text}'),
+          backgroundColor: Colors.teal,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,97 +68,95 @@ class BasicWidgetsPage extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // 1. CircleAvatar dengan Image Asset (profile.jpg)
-            Center(
-              child: CircleAvatar(
-                radius: 55,
-                backgroundColor: Colors.blue.shade100,
-                child: const CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage('assets/images/profile.jpg'),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Formulir Data Mahasiswa',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+
+              // 1. Input Nama Lengkap
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Nama Lengkap',
+                  hintText: 'Masukkan nama lengkap',
+                  prefixIcon: Icon(Icons.person),
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Nama tidak boleh kosong!';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // 2. Input NIM
+              TextFormField(
+                controller: _nimController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'NIM',
+                  hintText: 'Masukkan NIM',
+                  prefixIcon: Icon(Icons.badge),
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'NIM tidak boleh kosong!';
+                  }
+                  if (value.length < 10) {
+                    return 'NIM harus terdiri dari minimal 10 digit!';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // 3. Input Email
+              TextFormField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'Email Undiksha',
+                  hintText: 'contoh@undiksha.ac.id',
+                  prefixIcon: Icon(Icons.email),
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Email tidak boleh kosong!';
+                  }
+                  if (!value.contains('@')) {
+                    return 'Format email tidak valid (harus mengandung @)!';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 24),
+
+              // Tombol Submit
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton.icon(
+                  onPressed: _submitForm,
+                  icon: const Icon(Icons.send),
+                  label: const Text('Kirim Data', style: TextStyle(fontSize: 16)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal,
+                    foregroundColor: Colors.white,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-
-            // 2. Text Widget
-            const Text(
-              'I Ketut Bagus Brihaspati',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-              ),
-            ),
-            const Text(
-              'NIM: 2415051090',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-
-            // 3. Card & ListTile Widget
-            Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                children: const [
-                  ListTile(
-                    leading: Icon(Icons.school, color: Colors.blue),
-                    title: Text('Program Studi'),
-                    subtitle: Text('Pendidikan Teknik Informatika (PTI)'),
-                  ),
-                  Divider(height: 1),
-                  ListTile(
-                    leading: Icon(Icons.location_city, color: Colors.blue),
-                    title: Text('Fakultas'),
-                    subtitle: Text('Teknik dan Kejuruan (FTK)'),
-                  ),
-                  Divider(height: 1),
-                  ListTile(
-                    leading: Icon(Icons.account_balance, color: Colors.blue),
-                    title: Text('Universitas'),
-                    subtitle: Text('Universitas Pendidikan Ganesha'),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // 4. Button Widgets (ElevatedButton & OutlinedButton)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Tombol Simpan Profil Diklik!'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.save),
-                  label: const Text('Simpan Profil'),
-                ),
-                OutlinedButton.icon(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Tombol Bagikan Profil Diklik!'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.share),
-                  label: const Text('Bagikan'),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
