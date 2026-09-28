@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Identitas Wajib Tahap 1
-const String studentName = 'I Ketut Bagus Brihaspati';
-const String studentId = '2415051090';
-
 void main() {
   runApp(const MyApp());
 }
@@ -14,65 +10,46 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Tahap 2 - Dasar Flutter',
       debugShowCheckedModeBanner: false,
-      title: '$studentId - $studentName',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const IdentityPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+class IdentityPage extends StatelessWidget {
+  const IdentityPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Text('2415051090 - I Ketut Bagus Brihaspati'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('$studentId - $studentName'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+          children: const [
             Text(
-              '$studentId - $studentName',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              'Identitas Mahasiswa:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 10),
-            const Text(
-              'You have pushed the button this many times:',
+            SizedBox(height: 8),
+            Text(
+              'NIM : 2415051090',
+              style: TextStyle(fontSize: 16),
             ),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              'Nama : I Ketut Bagus Brihaspati',
+              style: TextStyle(fontSize: 16),
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
