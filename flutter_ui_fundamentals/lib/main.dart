@@ -6,8 +6,9 @@ void main() {
   runApp(const MyApp());
 }
 
-// Fungsi pembaca JSON
+// Fungsi untuk memuat data JSON (Kasus B & C)
 Future<Map<String, dynamic>> loadStudentData() async {
+  // Path asset harus persis sama dengan yang terdaftar di pubspec.yaml
   final jsonString = await rootBundle.loadString('assets/data/student_data.json');
   return jsonDecode(jsonString) as Map<String, dynamic>;
 }
@@ -60,37 +61,37 @@ class _DashboardPageState extends State<DashboardPage> {
         child: FutureBuilder<Map<String, dynamic>>(
           future: studentFuture,
           builder: (context, snapshot) {
-            // 1. Loading State
+            // 1. STATE LOADING
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            // 2. Error State
+            // 2. STATE ERROR (Kasus C: Menampilkan pesan jika JSON gagal dimuat/salah path)
             if (snapshot.hasError || !snapshot.hasData) {
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
                     'Gagal memuat data: ${snapshot.error}',
-                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.red, fontSize: 16),
                   ),
                 ),
               );
             }
 
-            // 3. Data Loaded State dengan Penanganan Null Safety
+            // 3. STATE SUKSES (Data berhasil dimuat)
             final data = snapshot.data!;
-            
             final student = (data['student'] as Map<String, dynamic>?) ?? {};
             final summary = (data['summary'] as Map<String, dynamic>?) ?? {
               'total_topics': 10,
               'progress_percentage': '60%'
             };
-            
-            // Mengambil list dari 'materials' atau 'courses' jika key beda
             final materials = (data['materials'] as List<dynamic>?) ?? 
-                              (data['courses'] as List<dynamic>?) ?? 
-                              [];
+                              (data['courses'] as List<dynamic>?) ?? [];
+
+            final String nim = student['nim']?.toString() ?? '2415051090';
+            final String name = student['name']?.toString() ?? 'I Ketut Bagus Brihaspati';
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,16 +100,32 @@ class _DashboardPageState extends State<DashboardPage> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      // Identity Card (NIM & Nama)
+                      // KASUS A - RENDERFLEX OVERFLOW FIXED!
+                      // Menggunakan Expanded pada Text agar tidak overflow saat teks sangat panjang
+                      Row(
+                        children: [
+                          const Icon(Icons.info, color: Color(0xFF1565C0)),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              '$nim - $name - Ini adalah teks yang sangat panjang untuk menguji layout',
+                              style: const TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Identity Card
                       IdentityCard(
-                        nim: student['nim']?.toString() ?? '2415051090',
-                        name: student['name']?.toString() ?? 'I Ketut Bagus Brihaspati',
+                        nim: nim,
+                        name: name,
                         courseTitle: student['course_title']?.toString() ?? 'Flutter UI Fundamentals',
                         meeting: student['meeting']?.toString() ?? 'Pertemuan 4',
                       ),
                       const SizedBox(height: 16),
 
-                      // Summary Row (Topik & Progress)
+                      // Summary Row
                       Row(
                         children: [
                           Expanded(
@@ -130,7 +147,6 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 ),
 
-                // Judul "Daftar Materi"
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                   child: Text(
@@ -143,17 +159,15 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 ),
 
-                // List Materi (ListView.builder)
+                // List Materials
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     itemCount: materials.length,
                     itemBuilder: (context, index) {
                       final item = materials[index] as Map<String, dynamic>;
-                      
                       final String title = item['title']?.toString() ?? 'Materi ${index + 1}';
                       
-                      // Konversi nilai status dari format lama ke format baru
                       String status = item['status']?.toString() ?? 'Rencana';
                       if (status == 'done') status = 'Selesai';
                       if (status == 'active') status = 'Berjalan';
@@ -201,17 +215,6 @@ class _DashboardPageState extends State<DashboardPage> {
                     },
                   ),
                 ),
-
-                // Footer
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: 8.0),
-                    child: Text(
-                      'Data list dimuat dari JSON statik',
-                      style: TextStyle(fontSize: 11, color: Colors.grey),
-                    ),
-                  ),
-                )
               ],
             );
           },
@@ -221,9 +224,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 }
 
-// ==========================================
-// REUSABLE WIDGET 1: IdentityCard
-// ==========================================
+// Widget IdentityCard
 class IdentityCard extends StatelessWidget {
   final String nim;
   final String name;
@@ -240,75 +241,33 @@ class IdentityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Kartu Atas: NIM & Nama
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(14.0),
-          decoration: BoxDecoration(
-            color: const Color(0xFFEFEFFC),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.blue.shade100),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14.0),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEFEFFC),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue.shade100),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'NIM: $nim',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black87),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'NIM: $nim',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Nama: $name',
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: Colors.black54,
-                ),
-              ),
-            ],
+          const SizedBox(height: 4),
+          Text(
+            'Nama: $name',
+            style: const TextStyle(fontSize: 13, color: Colors.black54),
           ),
-        ),
-        const SizedBox(height: 16),
-        // Baris Profil & Pertemuan
-        Row(
-          children: [
-            CircleAvatar(
-              radius: 26,
-              backgroundColor: Colors.blue.shade100,
-              child: const Icon(Icons.person, color: Colors.blue, size: 30),
-            ),
-            const SizedBox(width: 14),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  courseTitle,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  meeting,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-              ],
-            )
-          ],
-        )
-      ],
+        ],
+      ),
     );
   }
 }
 
-// ==========================================
-// REUSABLE WIDGET 2: SummaryCard
-// ==========================================
+// Widget SummaryCard
 class SummaryCard extends StatelessWidget {
   final String title;
   final String value;
